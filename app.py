@@ -261,30 +261,41 @@ with tab1:
             save_call_analysis(results)
             status.update(label=" Analysis Complete", state="complete", expanded=False)
             
-            # Display Results: Executive Summary
-            st.markdown("---")
-            st.subheader("Executive Analysis")
-            m1, m2, m3 = st.columns(3)
-            m1.metric("Sentiment", results['sentiment_label'], f"{results['sentiment_score']:.2f}")
-            m2.metric("Intent", results['intent'])
-            m3.metric("Sales Health", results['risk_level'])
+        # Display Results: Executive Dash
+        st.markdown("---")
+        st.header("🏢 Executive Intelligence Report")
+        
+        col_res1, col_res2 = st.columns([1, 1.2])
+        
+        with col_res1:
+            st.plotly_chart(show_sentiment_gauge(results['sentiment_score'], results['sentiment_label']), use_container_width=True)
             
-            # Smart Keywords
+        with col_res2:
+            st.subheader("Key Performance Indicators")
+            m1, m2 = st.columns(2)
+            m1.metric("Specific Intent", results['intent'])
+            m2.metric("Sales Health", results['risk_level'])
+            
             st.markdown("#### Primary Indicators")
             st.write(", ".join([f"`{k}`" for k in results['keywords']]))
-            
-            st.markdown("#### Business Intelligence Report")
+
+        # Tabbed Insights Report
+        st.markdown("---")
+        res_tab1, res_tab2 = st.tabs(["💡 AI Strategy & Insights", "📄 Processed Data"])
+        
+        with res_tab1:
             st.markdown(f"""
                 <div class="insider-card">
+                    <b>Strategic Recommendations:</b><br><br>
                     {results['insights'].replace("\n", "<br>")}
                 </div>
             """, unsafe_allow_html=True)
             
-            with st.expander("System Telemetry"):
-                st.json(results['latency_metrics'])
-            
-            with st.expander("View Cleaned Transcript"):
-                st.write(cleaned_text)
+        with res_tab2:
+            st.subheader("Telemetry & Metadata")
+            st.json(results['latency_metrics'])
+            st.subheader("Normalized Transcript")
+            st.text_area("Final Cleaned Text", cleaned_text, height=200, disabled=True)
 
 with tab2:
     st.header("Hugging Face Dataset Explorer")
