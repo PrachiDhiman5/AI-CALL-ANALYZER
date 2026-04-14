@@ -1,5 +1,7 @@
 # 🚀 AI Call Analyzer Pro (Enterprise Grade)
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ai-call-analyzer-362.streamlit.app/)
+
 A production-ready AI system designed to analyze sales and customer conversations using a state-of-the-art stack: **Hugging Face**, **Groq (Llama 3 + Whisper)**, **FAISS (RAG)**, and **Streamlit**.
 
 ## 🌟 Key Features
