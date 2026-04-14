@@ -1,0 +1,13 @@
+transformers
+datasets
+sentence-transformers
+faiss-cpu
+groq
+streamlit
+pandas
+scikit-learn
+nltk
+spacy
+plotly
+python-dotenv
+torch
