@@ -146,9 +146,9 @@ with st.spinner("Booting V2.1 Intelligence... (Loading models into memory)"):
     models = load_models(version="2.1")
 
 # Sidebar: Stealth Security Layer
-st.sidebar.title("🏢 System Architecture")
+st.sidebar.title(" System Architecture")
 st.sidebar.markdown("---")
-st.sidebar.success("✅ **Status:** Stealth Mode Active")
+st.sidebar.success(" **Status:** Stealth Mode Active")
 st.sidebar.markdown("**Engine:** `Llama-3.3-70B-Versatile`")
 st.sidebar.markdown("**Pipeline:** `Neural RAG v2.2` (Hybrid)")
 st.sidebar.markdown("---")
@@ -242,20 +242,24 @@ with tab1:
                 trigger_analysis = True
 
     if trigger_analysis and transcript_input:
-        with st.spinner(" Analyzing..."):
+        with st.status(" AI Pipeline Thinking...", expanded=True) as status:
+            st.write("1.  Cleaning & Normalizing...")
+            cleaned_text = clean_transcript(transcript_input)
+            
+            st.write("2.  Retrieving Context (RAG)...")
             # Setup Engines
-            llm = LLMEngine(api_key)
+            llm = LLMEngine(env_api_key)
             insights_engine = InsightsEngine(
                 models['sentiment'], models['intent'], extract_keywords,
                 models['embedder'], models['vector_db'], llm
             )
             
-            # Run Analysis
-            cleaned_text = clean_transcript(transcript_input)
+            st.write("3.  Running High-Density Models...")
             results = insights_engine.run_full_analysis(cleaned_text, filename, source_type)
             
-            # Save to DB
+            st.write("4.  Archiving Result...")
             save_call_analysis(results)
+            status.update(label=" Analysis Complete", state="complete", expanded=False)
             
             # Display Results: Executive Summary
             st.markdown("---")
