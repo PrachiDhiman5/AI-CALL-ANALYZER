@@ -12,10 +12,19 @@ class VectorDB:
         self.index_path = index_path
         self.metadata_path = index_path.replace(".bin", "_metadata.pkl")
         
-        if os.path.exists(self.index_path):
-            self.index = faiss.read_index(self.index_path)
-            with open(self.metadata_path, 'rb') as f:
-                self.metadata = pickle.load(f)
+        # Ensure data directory exists
+        os.makedirs(os.path.dirname(self.index_path), exist_ok=True)
+        
+        # Robust check: Only load if BOTH files exist
+        if os.path.exists(self.index_path) and os.path.exists(self.metadata_path):
+            try:
+                self.index = faiss.read_index(self.index_path)
+                with open(self.metadata_path, 'rb') as f:
+                    self.metadata = pickle.load(f)
+            except Exception:
+                # Fallback if files are corrupted or mismatched
+                self.index = faiss.IndexFlatL2(self.dimension)
+                self.metadata = []
         else:
             self.index = faiss.IndexFlatL2(self.dimension)
             self.metadata = []
