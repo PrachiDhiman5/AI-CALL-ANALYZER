@@ -226,13 +226,13 @@ with tab1:
             if audio_file:
                 st.audio(audio_file)
                 if st.button("Transcribe & Analyze"):
-                    if not api_key: st.error("API Key missing!")
+                    if not env_api_key: st.error("API Key missing!")
                     else:
                         with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(audio_file.name)[1]) as tmp:
                             tmp.write(audio_file.getvalue())
                             tmp_path = tmp.name
                         with st.spinner("Processing..."):
-                            transcript_input, _ = SpeechToText(api_key).transcribe(tmp_path)
+                            transcript_input, _ = SpeechToText(env_api_key).transcribe(tmp_path)
                         os.remove(tmp_path)
                         source_type, filename = "Audio", audio_file.name
                         trigger_analysis = True
