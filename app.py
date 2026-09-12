@@ -32,6 +32,8 @@ st.set_page_config(
 # Load environment variables
 load_dotenv()
 env_api_key = os.getenv("GROQ_API_KEY", "")
+if not env_api_key and hasattr(st, "secrets") and "GROQ_API_KEY" in st.secrets:
+    env_api_key = st.secrets["GROQ_API_KEY"]
 
 # Custom CSS: Warm Cream, Cobalt Blue & Slate Executive Theme
 st.markdown("""
