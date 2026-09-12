@@ -350,8 +350,7 @@ def load_core_engines():
         "intent": intent
     }
 
-with st.spinner("Initializing Conversational Intelligence Engine..."):
-    models = load_core_engines()
+models = load_core_engines()
 
 # Sidebar Setup (Matching Reference Image)
 with st.sidebar:
