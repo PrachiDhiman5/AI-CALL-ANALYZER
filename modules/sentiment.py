@@ -1,46 +1,39 @@
+from transformers import pipeline
 import time
 
 class SentimentAnalyzer:
-    def __init__(self, llm_engine=None):
-        self.llm_engine = llm_engine
+    def __init__(self):
+        print("Initializing Advanced Sentiment Analysis model...")
+        # Use a 3-class model (Positive, Neutral, Negative) for better nuance
+        self.analyzer = pipeline(
+            "sentiment-analysis", 
+            model="cardiffnlp/twitter-roberta-base-sentiment"
+        )
+        # Mapping labels for twitter-roberta (LABEL_0: Negative, LABEL_1: Neutral, LABEL_2: Positive)
+        self.label_map = {
+            "LABEL_0": "Negative",
+            "LABEL_1": "Neutral",
+            "LABEL_2": "Positive"
+        }
 
     def analyze(self, text):
         """
-        Ultra-fast sentiment analysis with zero-download overhead.
-        Uses LLM intelligence or fast lexical valence scoring.
+        Analyzes the sentiment of the given text.
+        Returns a dictionary with score, label, and latency.
         """
         start_time = time.time()
         
-        # 1. Fast Lexical Polarity Check
-        text_lower = text.lower()
-        pos_words = [
-            "great", "excellent", "happy", "love", "thanks", "thank", "perfect", "good", 
-            "helpful", "interested", "appreciate", "fantastic", "relief", "delighted", 
-            "awesome", "agree", "sign off", "ready to execute"
-        ]
-        neg_words = [
-            "bad", "terrible", "angry", "broken", "issue", "problem", "expensive", "error", 
-            "cancel", "refund", "worst", "unhappy", "frustrated", "high cost", "too high", 
-            "timeout", "blocked", "fail", "downsized"
-        ]
+        # Split text into chunks if it's too long (Transformers limitation)
+        # For simplicity, we'll take the first 512 tokens
+        results = self.analyzer(text[:2000]) 
         
-        pos_count = sum(1 for w in pos_words if w in text_lower)
-        neg_count = sum(1 for w in neg_words if w in text_lower)
+        latency = (time.time() - start_time) * 1000 # in ms
         
-        latency = (time.time() - start_time) * 1000
+        res = results[0]
+        label = self.label_map.get(res['label'], res['label'])
         
-        if pos_count > neg_count + 1:
-            label = "Positive"
-            score = round(min(0.96, 0.72 + (pos_count * 0.05)), 2)
-        elif neg_count > pos_count:
-            label = "Negative"
-            score = round(min(0.95, 0.70 + (neg_count * 0.06)), 2)
-        else:
-            label = "Neutral"
-            score = 0.68
-            
         return {
-            "score": score,
+            "score": res['score'],
             "label": label,
             "latency_ms": round(latency, 2)
         }
